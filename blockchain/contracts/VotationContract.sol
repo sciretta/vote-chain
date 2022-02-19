@@ -4,26 +4,43 @@ pragma solidity 0.8.11;
 import "./VoteContract.sol";
 
 contract VotationContract is VoteContract {
-
+  enum Party{ RED, BLUE }
   uint public votesLimit ;
   uint public votersCounter = 0;
   uint public redVotes = 0;
   uint public blueVotes = 0;
 
   constructor(uint _votesLimit) {
-      votesLimit = _votesLimit;
-   }
+    votesLimit = _votesLimit;
+  }
 
-   struct Voter {
-       uint documentId; 
-       uint createdAt;
-       address voterAddres;
-   }
+  struct Voter {
+    uint createdAt;
+    address voterAddres;
+    bool vote;
+  }
 
   mapping (uint => Voter) public registeredVoters;
 
   function registerVoter(uint _documentId) public {
-    registeredVoters[votersCounter] = Voter( _documentId, block.timestamp,msg.sender);
+    require(votersCounter < votesLimit, "Votes limit reached");
+    registeredVoters[_documentId] = Voter(block.timestamp,msg.sender, false);
     votersCounter++;
+  }
+
+  function vote(uint _documentId, Party _party) public {
+    require(registeredVoters[_documentId].voterAddres == msg.sender, "This document is not registered");
+    require(registeredVoters[_documentId].vote == false, "This document has already voted");
+
+    if(_party == Party.BLUE){
+      blueVotes++;
+      mintVote(_documentId);
+      registeredVoters[_documentId].vote = true;
+    } else if(_party == Party.RED){
+      redVotes++;
+      mintVote(_documentId);
+      registeredVoters[_documentId].vote = true;
+
+    }
   }
 }
