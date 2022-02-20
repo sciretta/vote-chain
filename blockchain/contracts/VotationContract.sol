@@ -6,12 +6,14 @@ import "./VoteContract.sol";
 contract VotationContract is VoteContract {
   enum Party{ RED, BLUE }
   uint public votesLimit ;
+  uint public endDate;
   uint public votersCounter = 0;
   uint public redVotes = 0;
   uint public blueVotes = 0;
 
-  constructor(uint _votesLimit) {
+  constructor(uint _votesLimit, uint _endDate) {
     votesLimit = _votesLimit;
+    endDate = _endDate;
   }
 
   struct Voter {
@@ -22,13 +24,18 @@ contract VotationContract is VoteContract {
 
   mapping (uint => Voter) public registeredVoters;
 
-  function registerVoter(uint _documentId) public {
+  modifier validateTime{
+    require(block.timestamp <= endDate, "Votation has closed" );
+    _;
+  }
+
+  function registerVoter(uint _documentId) public validateTime{
     require(votersCounter < votesLimit, "Votes limit reached");
     registeredVoters[_documentId] = Voter(block.timestamp,msg.sender, false);
     votersCounter++;
   }
 
-  function vote(uint _documentId, Party _party) public {
+  function vote(uint _documentId, Party _party) public validateTime{
     require(registeredVoters[_documentId].voterAddres == msg.sender, "This document is not registered");
     require(registeredVoters[_documentId].vote == false, "This document has already voted");
 
@@ -40,7 +47,6 @@ contract VotationContract is VoteContract {
       redVotes++;
       mintVote(_documentId);
       registeredVoters[_documentId].vote = true;
-
     }
   }
 }

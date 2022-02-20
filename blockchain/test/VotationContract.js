@@ -20,8 +20,12 @@ contract("Votation Contract", () => {
     const votersCounter = await this.votationContract.votersCounter();
     await this.votationContract.registerVoter(2);
     const votersCounter2 = await this.votationContract.votersCounter();
-    // await this.votationContract.registerVoter(3);
-    // const votersCounter3 = await this.votationContract.votersCounter();
+
+    try {
+      await this.votationContract.registerVoter(3);
+    } catch (error) {
+      assert.equal(error.reason, "Votes limit reached");
+    }
 
     assert.equal(votersCounter, 1);
     assert.equal(votersCounter2, 2);
@@ -29,14 +33,23 @@ contract("Votation Contract", () => {
 
   it("Vote", async () => {
     await this.votationContract.vote(1, 0);
-    // await this.votationContract.vote(1, 0);
     await this.votationContract.vote(2, 1);
-    // await this.votationContract.vote(3, 1);
+
+    try {
+      await this.votationContract.vote(1, 0);
+    } catch (error) {
+      assert.equal(error.reason, "This document has already voted");
+    }
+
+    try {
+      await this.votationContract.vote(3, 1);
+    } catch (error) {
+      assert.equal(error.reason, "This document is not registered");
+    }
+
     // await this.votationContract.vote(1, 1);
     const blueVotes = await this.votationContract.blueVotes();
     const redVotes = await this.votationContract.redVotes();
-
-    console.log({ blueVotes, redVotes });
 
     assert.equal(blueVotes, 1);
     assert.equal(redVotes, 1);
