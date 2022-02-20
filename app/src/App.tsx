@@ -1,45 +1,49 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Blockchain } from "./actions";
+import { Closed } from "./views/Closed";
+import { Register } from "./views/Register";
+import { Vote } from "./views/Vote";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  useEffect(() => {
+    const blockchain = new Blockchain();
+  }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
-}
+    <Router>
+      <div>
+        <header>
+          <h1>vote-chain</h1>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
+              <li>
+                <Link to="/vote">Vote</Link>
+              </li>
+              <li>
+                <Link to="/closed">Closed</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
 
-export default App
+        {/* A <Switch> looks through its children <Route>s and
+            renders the first one that matches the current URL. */}
+        <Switch>
+          <Route path="/register">
+            <Register />
+          </Route>
+          <Route path="/vote">
+            <Vote />
+          </Route>
+          <Route path="/closed">
+            <Closed />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  );
+}

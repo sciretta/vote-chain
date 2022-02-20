@@ -1,0 +1,6 @@
+{
+  "server": {
+    "baseDir": ["./blockchain/build/contracts"]
+  },
+  "port": "4000"
+}
