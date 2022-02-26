@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { Blockchain } from "./actions";
+import Web3 from "web3";
+// import { Blockchain } from "./actions";
 import { Closed } from "./views/Closed";
 import { Register } from "./views/Register";
 import { Vote } from "./views/Vote";
 
 export default function App() {
   useEffect(() => {
-    const blockchain = new Blockchain();
+    const web3 = new Web3();
+    console.log({ web3 });
   }, []);
 
   return (
